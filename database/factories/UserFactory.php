@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,7 +24,10 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $wallet = Wallet::factory()->create();
+
         return [
+            'wallet_id' => $wallet->id,
             'full_name' => fake()->name(),
             'cpf' => 'null',
             'email' => fake()->unique()->safeEmail(),
