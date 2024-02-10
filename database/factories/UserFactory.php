@@ -27,12 +27,13 @@ class UserFactory extends Factory
         $wallet = Wallet::factory()->create();
 
         return [
-            'wallet_id' => $wallet->id,
             'full_name' => fake()->name(),
-            'cpf' => 'null',
+            'cpf' => rand(23123123131, 99999999999),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'shopkeeper' => false,
             'password' => static::$password ??= Hash::make('password'),
+            'wallet_id' => $wallet,
             'remember_token' => Str::random(10),
         ];
     }

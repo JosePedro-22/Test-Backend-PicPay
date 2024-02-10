@@ -4,8 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -24,6 +24,7 @@ class User extends Authenticatable
         'cpf',
         'email',
         'password',
+        'wallet_id',
     ];
 
     /**
@@ -46,8 +47,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function Wallet():HasOne
+    public function wallet(): HasOne
     {
-        $this->hasOne(Wallet::class);
+        return $this->hasOne(Wallet::class);
     }
+
 }

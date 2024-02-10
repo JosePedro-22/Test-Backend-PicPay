@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TransferController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,11 +15,15 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('/test',function (){
-    return response()->json([
-       'data' => 'Hello World'
-    ]);
-})->name('test');
+Route::post('/transaction', [TransferController::class, 'transfer'])->name('transaction');
+
+Route::middleware('auth:sanctum')->group(function (){
+    //Route test
+    Route::get('/test',function (){return response()->json(['data' => 'Hello World']);})->name('test');
+
+
+});
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

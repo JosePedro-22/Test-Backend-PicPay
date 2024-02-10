@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Faker\Core\Uuid;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +18,7 @@ class WalletFactory extends Factory
      */
     public function definition(): array
     {
-        $user = User::factory()->create();
         return [
-            'user_id' => $user->id,
             'value' => fake()->numberBetween(0,99999),
         ];
     }
