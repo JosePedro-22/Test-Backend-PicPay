@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'cpf' => rand(23123123131, 99999999999),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'shopkeeper' => false,
+            'shopkeeper' => true,
             'password' => static::$password ??= Hash::make('password'),
             'wallet_id' => $wallet,
             'remember_token' => Str::random(10),

@@ -22,11 +22,10 @@ class TransfersResource extends JsonResource
         $wallet_payer = Wallet::findOrFail($payer['wallet_id']);
         $wallet_payee = Wallet::findOrFail($payee['wallet_id']);
 
-        $response = Http::get('https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc');
-        $notification_transaction = Http::get('https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6');
+        $response_transaction = Http::get('https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc');
 
-        if(!$payer['shopkeeper'])
-            if($payer['id'] !== $payee['id'] && $wallet_payer['value'] > $request['value'] && $response->successful()) {
+        if(!$payer['shopkeeper'] && $payer['id'] !== $payee['id'] && $wallet_payer['value'] > $request['value'])
+            if($response_transaction->successful()) {
 
                 $wallet_payer['value'] -= $request['value'];
                 $wallet_payee['value'] += $request['value'];
@@ -39,6 +38,8 @@ class TransfersResource extends JsonResource
                 $wallet_payer->save();
                 $wallet_payee->save();
                 $transaction->save();
+
+                $notification_transaction = Http::get('https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6');
 
                 return [
                     'transaction' => "transaction successful",
