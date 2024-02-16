@@ -24,16 +24,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $wallet = Wallet::factory()->create();
-
         return [
-            'full_name' => fake()->name(),
+            'name' => fake()->name(),
             'cpf' => rand(23123123131, 99999999999),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'shopkeeper' => true,
             'password' => static::$password ??= Hash::make('password'),
-            'wallet_id' => $wallet,
             'remember_token' => Str::random(10),
         ];
     }
