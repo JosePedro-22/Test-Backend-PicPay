@@ -3,13 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class CreateUserRepository
 {
 
-    public function createUser($request)
+    public function createUser($request): JsonResponse
     {
         $validateUser = Validator::make($request->all(),
             [

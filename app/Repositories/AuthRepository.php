@@ -4,37 +4,47 @@ namespace App\Repositories;
 
 use App\Models\Retailer;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\InvalidDataProviderException;
 use PHPUnit\Logging\Exception;
 
 class AuthRepository
 {
 
+    /**
+     * @throws AuthenticationException
+     */
     public function authenticate(string $provider, Request $request): JsonResponse
     {
+
         $providers = [
             'user',
             'retailer'
         ];
 
         if (!in_array($provider, $providers))
-            return response()->json(['errors' => ['main' => 'Wrong provider provided']], 422);
+            throw new InvalidDataProviderException('Wrong provider provided');
 
         $selectedProvider = $this->getProvider($provider);
 
         $model = $selectedProvider->where('email', $request->input('email'))->first();
 
         if(!$model)
-            return response()->json(['errors' => ['main' => 'Wrong provider provided']], 401);
+            throw new InvalidDataProviderException('Wrong provider provided');
 
         if(!Hash::check($request->input('password'), $model->password))
-            return response()->json(['errors' => ['main' => 'Wrong Credentials']], 401);
+            throw new AuthenticationException('Wrong Credentials');
 
         $token = $model->createToken($provider);
 
-        return $token;
+        return response()->json([
+            'token' => $token->plainTextToken,
+            'expires_at' => $token->expires_at ?? '',
+            'provider' => $provider,
+        ]);
     }
 
     public function getProvider(string $provider): User | Retailer | Exception

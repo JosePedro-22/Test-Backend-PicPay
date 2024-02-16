@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Repositories\CreateUserRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -17,12 +18,10 @@ class CreateUserController extends Controller
         $this->createUserRepository = $createUserRepository;
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try {
-
-            $this->createUserRepository->createUser($request);
-
+            return $this->createUserRepository->createUser($request);
         } catch (Throwable $th) {
             return response()->json([
                 'status' => false,
