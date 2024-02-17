@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,19 +26,23 @@ class LoginRepository
             ], 401);
 
         $credentials = $request->only('email', 'password');
-        $user = Auth::user();
 
-        if(Auth::attempt($credentials))
+        if (Auth::attempt($credentials)) {
+
+            $user = User::where('email', $request['email'])->first();
+            $accessToken = $user->createToken("API TOKEN")->plainTextToken;
+
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'token' => $accessToken
             ], 200);
-
-        else
+        }
+        else {
             return response()->json([
                 'status' => false,
-                'message' => 'Email & Password do not match with our records.',
+                'message' => 'User not authenticated',
             ], 401);
+        }
     }
 }

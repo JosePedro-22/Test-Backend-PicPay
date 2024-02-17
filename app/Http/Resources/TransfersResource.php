@@ -3,10 +3,9 @@
 namespace App\Http\Resources;
 
 use App\Models\Shopkeeper;
-use App\Models\Transfer;
+use App\Models\Transactoins\Transfer;
+use App\Models\Transactoins\Wallet;
 use App\Models\User;
-use App\Models\Wallet;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Http;

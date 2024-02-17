@@ -13,20 +13,11 @@ use PHPUnit\Logging\Exception;
 
 class AuthRepository
 {
-
     /**
      * @throws AuthenticationException
      */
     public function authenticate(string $provider, Request $request): JsonResponse
     {
-
-        $providers = [
-            'user',
-            'retailer'
-        ];
-
-        if (!in_array($provider, $providers))
-            throw new InvalidDataProviderException('Wrong provider provided');
 
         $selectedProvider = $this->getProvider($provider);
 
@@ -54,6 +45,6 @@ class AuthRepository
         else if($provider === 'provider')
             return new Retailer();
         else
-            return throw new Exception('Provider not found');
+            return throw new InvalidDataProviderException('Wrong provider provided');
     }
 }

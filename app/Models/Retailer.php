@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Transactoins\Wallet;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -38,4 +40,10 @@ class Retailer extends Model
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
 }
+
