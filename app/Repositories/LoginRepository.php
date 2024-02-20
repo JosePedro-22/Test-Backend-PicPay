@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Retailer;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,25 +12,37 @@ use Illuminate\Support\Facades\Validator;
 class LoginRepository
 {
 
-    public function login(Request $request): JsonResponse
+    public function login(Request $request, $provider): JsonResponse
     {
         $validateUser = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email' => 'required | email',
             'password' => 'required'
         ]);
 
-        if($validateUser->fails())
+        if($validateUser->fails()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validateUser->errors()
             ], 401);
+        }
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('retailers')->attempt($credentials)) {
 
-            $user = User::where('email', $request['email'])->first();
+            if($provider == 'users') {
+                $user = User::where('email', $request['email'])->first();
+            }
+            else if($provider == 'retailers') {
+                $user = Retailer::where('email', $request['email'])->first();
+            }
+            else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
             $accessToken = $user->createToken("API TOKEN")->plainTextToken;
 
             return response()->json([

@@ -14,6 +14,7 @@ class Wallet extends Model
 
     protected $fillable = [
         'user_id',
+        'retailer_id',
         'balance'
     ];
 
@@ -24,6 +25,6 @@ class Wallet extends Model
 
     public function user(): BelongsTo
     {
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 }

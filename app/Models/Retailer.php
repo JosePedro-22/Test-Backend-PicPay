@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Models\Transactoins\Wallet;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Retailer extends Model
+class Retailer extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
     public $incrementing = false;

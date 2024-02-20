@@ -5,8 +5,6 @@ use App\Http\Controllers\CreateUserController;
 use App\Http\Controllers\GetMeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Transaction\TransactionController;
-use App\Http\Controllers\TransferController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',
@@ -15,8 +13,8 @@ Route::get('/',
     }
 );
 
-Route::post('auth/create', [CreateUserController::class, 'store'])->name('createUser');
-Route::post('auth/login', [LoginController::class, 'store'])->name('login');
+Route::post('auth/create/{provider}', [CreateUserController::class, 'store'])->name('createUser');
+Route::post('auth/login/{provider}', [LoginController::class, 'store'])->name('login');
 
 Route::middleware('auth:sanctum')
     ->group(function (){

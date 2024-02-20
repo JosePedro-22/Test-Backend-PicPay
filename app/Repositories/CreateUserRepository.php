@@ -2,15 +2,19 @@
 
 namespace App\Repositories;
 
+use App\Models\Retailer;
 use App\Models\User;
+use http\Client\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\Framework\InvalidDataProviderException;
+use PHPUnit\Logging\Exception;
 
 class CreateUserRepository
 {
 
-    public function createUser($request): JsonResponse
+    public function createUser($request, string $provider): JsonResponse
     {
         $validateUser = Validator::make($request->all(),
             [
@@ -27,17 +31,34 @@ class CreateUserRepository
             ], 401);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'cpf' => $request->cpf,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        $selectedTypeUserProvider = $this->getProvider($request, $provider);
 
         return response()->json([
             'status' => true,
             'message' => 'User Created Successfully',
-            'token' => $user->createToken("API TOKEN")->plainTextToken
+            'token' => $selectedTypeUserProvider->createToken("API TOKEN")->plainTextToken
         ], 200);
+    }
+
+    public function getProvider($request, string $provider): Exception | User | Retailer
+    {
+        if($provider === 'user') {
+            //            dd($user, $user->id);
+            return User::create([
+                'name' => $request->name,
+                'cpf' => $request->cpf,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+        }
+        else if ($provider === 'retailer') {
+            return Retailer::create([
+                'name' => $request->name,
+                'cpf' => $request->cpf,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+        }
+        else return throw new InvalidDataProviderException('Wrong provider provided');
     }
 }

@@ -44,9 +44,9 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'retailer' => [
+        'retailers' => [
             'driver' => 'session',
-            'provider' => 'retailer',
+            'provider' => 'retailers',
         ],
     ],
 
@@ -72,7 +72,7 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-        'retailer' => [
+        'retailers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Retailer::class,
         ],
@@ -109,8 +109,8 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'retailer' => [
-            'provider' => 'retailer',
+        'retailers' => [
+            'provider' => 'retailers',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

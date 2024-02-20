@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\TransactionRepository;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -28,8 +29,8 @@ class TransactionController extends Controller
             ]);
 
             return $this->transactionRepository->handle($request);
-        }catch (ValidationException $e) {
-            return response()->json(['errors' => ['main' => $e->getMessage()]],$e->status);
+        }catch (InvalidDataProviderException|Exception $e) {
+            return response()->json(['errors' => ['main' => $e->getMessage()]], $e->getCode());
         }
     }
 

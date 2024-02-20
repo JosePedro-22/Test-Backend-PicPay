@@ -15,10 +15,10 @@ class LoginController extends Controller
         $this->loginRepository = $loginRepository;
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, string $provider): JsonResponse
     {
         try {
-            return $this->loginRepository->login($request);
+            return $this->loginRepository->login($request, $provider);
         } catch (Throwable $th) {
             return response()->json([
                 'status' => false,
