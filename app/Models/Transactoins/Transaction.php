@@ -13,13 +13,19 @@ class Transaction extends Model
     protected $table ='wallet_transactions';
 
     protected $fillable = [
-        'player_id',
-        'playee_id',
+        'player_wallet_id',
+        'playee_wallet_id',
         'amount'
     ];
 
-    public function wallet(): BelongsTo
+    public function walletPayer(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class);
+        return $this->belongsTo(Wallet::class, 'player_wallet_id');
     }
+
+    public function walletPayee(): BelongsTo
+    {
+        return $this->belongsTo(Wallet::class, 'playee_wallet_id');
+    }
+
 }

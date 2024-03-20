@@ -4,6 +4,7 @@ namespace Tests\Feature\app\Http\Controller;
 
 use App\Models\Retailer;
 use App\Models\User;
+use Illuminate\Notifications\SendQueuedNotifications;
 use Tests\TestCase;
 
 class TransactionController extends TestCase
@@ -123,5 +124,40 @@ class TransactionController extends TestCase
 
         $request->assertStatus(422);
         $request->assertJson(['errors' => ['main' => "balance in the card is not enough"]]);
+    }
+
+    public function testUserCanTransferMoney()
+    {
+        $this->expectsEvents(SendQueuedNotifications::class);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer 3|WThJZIKUClKc3kbMJHofkEsAJCLpu0rnAOr7d5eO96cb85de'
+        ];
+
+        $userPayer = User::where('email', 'josepedro@gmail.com')->first();
+        $userPayer->wallet->deposit(1000);
+        $userPayed = User::factory()->create();
+
+        $payload = [
+            'provider' => 'users',
+            'payee_id' => $userPayed->id,
+            'amount' => 100
+        ];
+        $request = $this->actingAs($userPayer, 'users')
+            ->post(route('postTransaction'), $payload);
+
+
+        $request->assertResponseStatus(200);
+
+        $request->seeInDatabase('wallets', [
+            'id' => $userPayer->wallet->id,
+            'balance' => 900
+        ]);
+
+        $request->seeInDatabase('wallets', [
+            'id' => $userPayed->wallet->id,
+            'balance' => 100
+        ]);
     }
 }

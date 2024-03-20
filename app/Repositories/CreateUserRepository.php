@@ -43,7 +43,6 @@ class CreateUserRepository
     public function getProvider($request, string $provider): Exception | User | Retailer
     {
         if($provider === 'user') {
-            //            dd($user, $user->id);
             return User::create([
                 'name' => $request->name,
                 'cpf' => $request->cpf,
