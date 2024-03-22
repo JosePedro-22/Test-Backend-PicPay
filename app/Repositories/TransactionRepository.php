@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Events\SendNotification;
 use App\Models\Retailer;
 use App\Models\Transactoins\Transaction;
 use App\Models\User;
+use App\Services\MockyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +30,10 @@ class TransactionRepository
             throw new \Exception('balance in the card is not enough', 422);
         }
 
+        if (!$this->isServiceAbleToMakeTransaction()) {
+            throw new IdleServiceException('Service is not responding. Try again later.');
+        }
+
         return $this->makeTransaction($payee, $request);
     }
     private function retrievePayee(Request $request)
@@ -39,7 +45,7 @@ class TransactionRepository
         }catch(InvalidDataProviderException | Exception $e){
             return false;
         }
-        
+
     }
     public function getGuard(): bool | InvalidDataProviderException
     {
@@ -82,10 +88,19 @@ class TransactionRepository
 
         return DB::transaction(function() use($payload){
             $transaction = Transaction::create($payload);
+
             $transaction->walletPayer->withDraw($payload['amount']);
             $transaction->walletPayer->deposit($payload['amount']);
 
+
+            event(new SendNotification($transaction));
             return $transaction;
         });
+    }
+
+    private function isServiceAbleToMakeTransaction(): bool
+    {
+        $service = app(MockyService::class)->authorizeTransaction();
+        return $service['message'] == 'Autorizado';
     }
 }
