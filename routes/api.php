@@ -18,7 +18,7 @@ Route::post('auth/login/{provider}', [LoginController::class, 'store'])->name('l
 
 Route::middleware('auth:sanctum')
     ->group(function (){
-        Route::post('/auth/me', [GetMeController::class, 'me'])
+        Route::get('/auth/me', [GetMeController::class, 'me'])
             ->name('me');
 
         Route::post('/auth/transactions', [TransactionController::class, 'postTransaction'])

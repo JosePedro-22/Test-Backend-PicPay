@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Retailer;
 use App\Models\User;
-use http\Client\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -13,13 +12,13 @@ use PHPUnit\Logging\Exception;
 
 class CreateUserRepository
 {
-
     public function createUser($request, string $provider): JsonResponse
     {
         $validateUser = Validator::make($request->all(),
             [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email',
+                'cpf' => 'required',
                 'password' => 'required'
             ]);
 
@@ -31,15 +30,15 @@ class CreateUserRepository
             ], 401);
         }
 
-        $selectedTypeUserProvider = $this->getProvider($request, $provider);
+//        $selectedTypeUserProvider = $this->getProvider($request, $provider);
+        $this->getProvider($request, $provider);
 
         return response()->json([
             'status' => true,
             'message' => 'User Created Successfully',
-            'token' => $selectedTypeUserProvider->createToken("API TOKEN")->plainTextToken
+//            'token' => $selectedTypeUserProvider->createToken("API TOKEN")->plainTextToken
         ], 200);
     }
-
     public function getProvider($request, string $provider): Exception | User | Retailer
     {
         if($provider === 'user') {

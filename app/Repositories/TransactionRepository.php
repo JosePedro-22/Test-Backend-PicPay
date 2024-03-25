@@ -7,6 +7,7 @@ use App\Models\Retailer;
 use App\Models\Transactoins\Transaction;
 use App\Models\User;
 use App\Services\MockyService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,35 +18,22 @@ class TransactionRepository
 {
     public function handle($request): Transaction
     {
+
         if(!$this->getGuard())
             return throw new InvalidDataProviderException('Retailer is not authorized to make transactions', 401);
 
-        if(!$payee = $this->retrievePayee($request)){
-            throw new InvalidDataProviderException('testando');
-        }
+        if(!$payee = $this->retrievePayee($request))
+            throw new InvalidDataProviderException("Register {$request['payee_id']} not found");
 
         $myWallet = Auth::guard($request['provider'])->user()->wallet;
 
-        if(!$this->checkUserBalance($myWallet, $request['amount'])){
+        if(!$this->checkUserBalance($myWallet, $request['amount']))
             throw new \Exception('balance in the card is not enough', 422);
-        }
 
-        if (!$this->isServiceAbleToMakeTransaction()) {
-            throw new IdleServiceException('Service is not responding. Try again later.');
-        }
+        if (!$this->isServiceAbleToMakeTransaction())
+            throw new Exception('Service is not responding. Try again later.');
 
         return $this->makeTransaction($payee, $request);
-    }
-    private function retrievePayee(Request $request)
-    {
-        try{
-            $model = $this->getProvider($request['provider']);
-
-            return $model->findOrFail($request['payee_id']);
-        }catch(InvalidDataProviderException | Exception $e){
-            return false;
-        }
-
     }
     public function getGuard(): bool | InvalidDataProviderException
     {
@@ -59,7 +47,6 @@ class TransactionRepository
             return throw new InvalidDataProviderException('Wrong Auth Guard', 422);
         }
     }
-
     public function getProvider(string $provider): User | Retailer | InvalidDataProviderException
     {
 
@@ -73,12 +60,21 @@ class TransactionRepository
             return throw new InvalidDataProviderException('Wrong provider provided', 422);
         }
     }
+    private function retrievePayee(array $request)
+    {
+        $model = $this->getProvider($request['provider']);
 
-    private function checkUserBalance($user, mixed $amount)
+        $registro = $model->find($request['payee_id']);
+
+        if(empty($registro)){
+            throw new ModelNotFoundException("Registro {$request['payee_id']} não encontrado",404);
+        }
+        return $registro;
+    }
+    private function checkUserBalance($user, mixed $amount): bool
     {
         return $user->wallet->balance >= $amount;
     }
-
     private function makeTransaction($payee ,$data){
         $payload = [
             'payer_wallet_id' => Auth::guard($data['provider'])->user()->wallet->id,
@@ -97,7 +93,6 @@ class TransactionRepository
             return $transaction;
         });
     }
-
     private function isServiceAbleToMakeTransaction(): bool
     {
         $service = app(MockyService::class)->authorizeTransaction();

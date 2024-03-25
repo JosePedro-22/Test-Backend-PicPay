@@ -11,11 +11,10 @@ use PHPUnit\Framework\InvalidDataProviderException;
 
 class AuthController extends Controller
 {
-    private AuthRepository $repository;
-    public function __construct(AuthRepository $repository)
-    {
-        $this->repository = $repository;
-    }
+//    private AuthRepository $repository;
+    public function __construct(
+        private readonly AuthRepository $repository
+    ){}
     public function postAuthenticate(Request $request, string $provider): JsonResponse
     {
         try {

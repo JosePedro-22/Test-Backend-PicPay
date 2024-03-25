@@ -29,12 +29,11 @@ class LoginRepository
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('retailers')->attempt($credentials)) {
-
-            if($provider == 'users') {
+//        if (Auth::guard('retailers')->attempt($credentials)) {
+            if($provider == 'user') {
                 $user = User::where('email', $request['email'])->first();
             }
-            else if($provider == 'retailers') {
+            else if($provider == 'retailer') {
                 $user = Retailer::where('email', $request['email'])->first();
             }
             else {
@@ -50,12 +49,12 @@ class LoginRepository
                 'message' => 'User Logged In Successfully',
                 'token' => $accessToken
             ], 200);
-        }
-        else {
-            return response()->json([
-                'status' => false,
-                'message' => 'User not authenticated',
-            ], 401);
-        }
+//        }
+//        else {
+//            return response()->json([
+//                'status' => false,
+//                'message' => 'User not authenticated',
+//            ], 401);
+//        }
     }
 }

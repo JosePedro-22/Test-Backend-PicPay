@@ -9,11 +9,9 @@ use Throwable;
 
 class CreateUserController extends Controller
 {
-    private CreateUserRepository $createUserRepository;
-    public function __construct(CreateUserRepository $createUserRepository)
-    {
-        $this->createUserRepository = $createUserRepository;
-    }
+    public function __construct(
+        private readonly CreateUserRepository $createUserRepository
+    ){}
 
     public function store(Request $request, string $provider): JsonResponse
     {
