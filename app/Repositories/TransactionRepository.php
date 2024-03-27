@@ -18,14 +18,13 @@ class TransactionRepository
 {
     public function handle($request): Transaction
     {
-
         if(!$this->getGuard())
             return throw new InvalidDataProviderException('Retailer is not authorized to make transactions', 401);
 
         if(!$payee = $this->retrievePayee($request))
             throw new InvalidDataProviderException("Register {$request['payee_id']} not found");
 
-        $myWallet = Auth::guard($request['provider'])->user()->wallet;
+        $myWallet = Auth::guard()->user()->wallet;
 
         if(!$this->checkUserBalance($myWallet, $request['amount']))
             throw new \Exception('balance in the card is not enough', 422);
@@ -73,7 +72,7 @@ class TransactionRepository
     }
     private function checkUserBalance($user, mixed $amount): bool
     {
-        return $user->wallet->balance >= $amount;
+        return $user->balance >= $amount;
     }
     private function makeTransaction($payee ,$data){
         $payload = [

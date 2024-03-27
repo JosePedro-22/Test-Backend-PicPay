@@ -104,31 +104,61 @@ class TransactionController extends TestCase
         $request->assertJson(['errors' => ['main' => "Retailer is not authorized to make transactions"]]);
     }
 
-//    public function testUserShouldHaveMoneyToPerformSomeTransaction()
-//    {
-//        $headers = [
-//            'Content-Type' => 'application/json',
-//            'Authorization' => 'Bearer 5|Ba0Q4E9c3EMCjvSfsDXlsQGLFyDBvxRwsLk8NknNf622089d'
-//        ];
-//
-//        $user = User::where('email', 'teste@teste.com.br')->first();
-//
-//        $payload = [
-//            'provider' => 'user',
-//            'payee_id' => 1,
-//            'amount' => 123
-//        ];
-//
-//        $request = $this->actingAs($user, 'users')
-//            ->postJson(route('postTransaction'), $payload, $headers);
-//
-//        $request->assertStatus(422);
-//        $request->assertJson([
-//            'errors' => [
-//                'main' => 'balance in the card is not enough'
-//            ]
-//        ]);
-//    }
+    public function testUserShouldHaveMoneyToPerformSomeTransaction()
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer 5|Ba0Q4E9c3EMCjvSfsDXlsQGLFyDBvxRwsLk8NknNf622089d'
+        ];
+
+        $user = User::where('email', 'teste@teste.com.br')->first();
+
+        $payload = [
+            'provider' => 'user',
+            'payee_id' => 1,
+            'amount' => 8001
+        ];
+
+        $request = $this->actingAs($user, 'users')
+            ->postJson(route('postTransaction'), $payload, $headers);
+
+        $request->assertStatus(422);
+        $request->assertJson([
+            'errors' => [
+                'main' => 'balance in the card is not enough'
+            ]
+        ]);
+    }
+
+    public function testUserTransferMoneyWithNotAuthorized()
+    {
+//        $this->expectsEvents(SendQueuedNotifications::class);
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer 5|Ba0Q4E9c3EMCjvSfsDXlsQGLFyDBvxRwsLk8NknNf622089d'
+        ];
+
+        $userPayer = User::where('email', 'teste@teste.com.br')->first();
+
+        $userPayed = Retailer::where('email', 'pedro@pedro.com')->first();
+
+        $payload = [
+            'provider' => 'user',
+            'payee_id' => $userPayed->id,
+            'amount' => 100
+        ];
+
+        $request = $this->actingAs($userPayer, 'users')
+            ->postJson(route('postTransaction'), $payload, $headers);
+
+        $request->assertStatus(422);
+        $request->assertJson([
+            'errors' => [
+                'main' => 'Service is not responding. Try again later.'
+            ]
+        ]);
+    }
 
 //    public function testUserCanTransferMoney()
 //    {
@@ -140,7 +170,7 @@ class TransactionController extends TestCase
 //        ];
 //
 //        $userPayer = User::where('email', 'teste@teste.com.br')->first();
-//        $userPayer->wallet->deposit(1000);
+////        $userPayer->wallet->deposit(1000);
 //
 //        $userPayed = Retailer::where('email', 'pedro@pedro.com')->first();
 //
@@ -149,19 +179,20 @@ class TransactionController extends TestCase
 //            'payee_id' => $userPayed->id,
 //            'amount' => 100
 //        ];
+//
 //        $request = $this->actingAs($userPayer, 'users')
-//            ->post(route('postTransaction'), $payload, $headers);
+//            ->postJson(route('postTransaction'), $payload, $headers);
 //
 //        $request->assertStatus(200);
 //
-//        $request->seeInDatabase('wallets', [
-//            'id' => $userPayer->wallet->id,
-//            'balance' => 900
-//        ]);
-//
-//        $request->seeInDatabase('wallets', [
-//            'id' => $userPayed->wallet->id,
-//            'balance' => 100
-//        ]);
+////        $request->seeInDatabase('wallets', [
+////            'id' => $userPayer->wallet->id,
+////            'balance' => 900
+////        ]);
+////
+////        $request->seeInDatabase('wallets', [
+////            'id' => $userPayed->wallet->id,
+////            'balance' => 100
+////        ]);
 //    }
 }

@@ -30,13 +30,11 @@ class CreateUserRepository
             ], 401);
         }
 
-//        $selectedTypeUserProvider = $this->getProvider($request, $provider);
         $this->getProvider($request, $provider);
 
         return response()->json([
             'status' => true,
             'message' => 'User Created Successfully',
-//            'token' => $selectedTypeUserProvider->createToken("API TOKEN")->plainTextToken
         ], 200);
     }
     public function getProvider($request, string $provider): Exception | User | Retailer
