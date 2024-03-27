@@ -9,11 +9,9 @@ use Throwable;
 
 class LoginController extends Controller
 {
-    private LoginRepository $loginRepository;
-    public function __construct(LoginRepository $loginRepository)
-    {
-        $this->loginRepository = $loginRepository;
-    }
+    public function __construct(
+        private readonly LoginRepository $loginRepository
+    ){}
 
     public function store(Request $request, string $provider): JsonResponse
     {

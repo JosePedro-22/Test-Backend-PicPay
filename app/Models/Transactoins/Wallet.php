@@ -2,6 +2,7 @@
 
 namespace App\Models\Transactoins;
 
+use App\Models\Retailer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,16 +28,22 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function retailer(): BelongsTo
+    {
+        return $this->belongsTo(Retailer::class);
+    }
 
-    public function deposit($value){
+    public function deposit($value): void
+    {
         $this->update([
-            'balance' => $this->attributes['balance'] + $value
+            'balance' => $this->attributes['balance'] += $value
         ]);
     }
 
-    public function withDraw($value){
+    public function withDraw($value): void
+    {
         $this->update([
-            'balance' => $this->attributes['balance'] -  $value
+            'balance' => $this->attributes['balance'] -=  $value
         ]);
     }
 }

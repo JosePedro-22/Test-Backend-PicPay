@@ -132,7 +132,6 @@ class TransactionController extends TestCase
 
     public function testUserTransferMoneyWithNotAuthorized()
     {
-//        $this->expectsEvents(SendQueuedNotifications::class);
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -160,39 +159,28 @@ class TransactionController extends TestCase
         ]);
     }
 
-//    public function testUserCanTransferMoney()
-//    {
-////        $this->expectsEvents(SendQueuedNotifications::class);
-//
-//        $headers = [
-//            'Content-Type' => 'application/json',
-//            'Authorization' => 'Bearer 5|Ba0Q4E9c3EMCjvSfsDXlsQGLFyDBvxRwsLk8NknNf622089d'
-//        ];
-//
-//        $userPayer = User::where('email', 'teste@teste.com.br')->first();
-////        $userPayer->wallet->deposit(1000);
-//
-//        $userPayed = Retailer::where('email', 'pedro@pedro.com')->first();
-//
-//        $payload = [
-//            'provider' => 'user',
-//            'payee_id' => $userPayed->id,
-//            'amount' => 100
-//        ];
-//
-//        $request = $this->actingAs($userPayer, 'users')
-//            ->postJson(route('postTransaction'), $payload, $headers);
-//
-//        $request->assertStatus(200);
-//
-////        $request->seeInDatabase('wallets', [
-////            'id' => $userPayer->wallet->id,
-////            'balance' => 900
-////        ]);
-////
-////        $request->seeInDatabase('wallets', [
-////            'id' => $userPayed->wallet->id,
-////            'balance' => 100
-////        ]);
-//    }
+    public function testUserCanTransferMoney()
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer 1|6AvCnhovQSGNirzuXFcO0n5LTsDvcmGZUUHMxgs16314c329'
+        ];
+
+        $userPayer = User::where('email', 'teste@teste.com.br')->first();
+//        $userPayer->wallet->deposit(1000);
+//        $userPayer->wallet->withDraw(1000);
+
+        $userPayed = Retailer::where('email', 'pedro@pedro.com')->first();
+
+        $payload = [
+            'provider' => 'user',
+            'payee_id' => $userPayed->id,
+            'amount' => 100
+        ];
+
+        $request = $this->actingAs($userPayer, 'users')
+            ->postJson(route('postTransaction'), $payload, $headers);
+
+        $request->assertStatus(200);
+    }
 }

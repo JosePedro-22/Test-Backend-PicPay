@@ -29,8 +29,8 @@ class TransactionRepository
         if(!$this->checkUserBalance($myWallet, $request['amount']))
             throw new \Exception('balance in the card is not enough', 422);
 
-        if (!$this->isServiceAbleToMakeTransaction())
-            throw new Exception('Service is not responding. Try again later.');
+//        if (!$this->isServiceAbleToMakeTransaction())
+//            throw new Exception('Service is not responding. Try again later.');
 
         return $this->makeTransaction($payee, $request);
     }
@@ -76,19 +76,15 @@ class TransactionRepository
     }
     private function makeTransaction($payee ,$data){
         $payload = [
-            'payer_wallet_id' => Auth::guard($data['provider'])->user()->wallet->id,
+            'payer_wallet_id' => Auth::guard()->user()->wallet->id,
             'payee_wallet_id' => $payee->wallet->id,
             'amount' => $data['amount'],
         ];
 
         return DB::transaction(function() use($payload){
             $transaction = Transaction::create($payload);
-
             $transaction->walletPayer->withDraw($payload['amount']);
-            $transaction->walletPayer->deposit($payload['amount']);
-
-
-            event(new SendNotification($transaction));
+            $transaction->walletPayee->deposit($payload['amount']);
             return $transaction;
         });
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\AuthRepository;
-use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +10,6 @@ use PHPUnit\Framework\InvalidDataProviderException;
 
 class AuthController extends Controller
 {
-//    private AuthRepository $repository;
     public function __construct(
         private readonly AuthRepository $repository
     ){}
